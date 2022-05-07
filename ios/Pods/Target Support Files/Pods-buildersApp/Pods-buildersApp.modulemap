@@ -1,0 +1,6 @@
+module Pods_buildersApp {
+  umbrella header "Pods-buildersApp-umbrella.h"
+
+  export *
+  module * { export * }
+}
