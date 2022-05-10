@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, Image, SafeAreaView } from 'react-native';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import GetLocation from "react-native-get-location";
-import getWeatherData from "../../api/weatherAPI";
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import styles from "./styles";
 
 const API_KEY = "7bc78d56620a4aca98d172149220705";
@@ -24,9 +24,7 @@ const Home = () => {
     const [ visionDist, setVisionDist ] = useState([]);
     const [ windDirection, setWindDirection ] = useState([]);
     const [ windSpeed, setWindSpeed ] = useState([]);
-    //const [ location, setLocation ] = useState([]);
     
-
     async function refresh(){
         setLoading(true);
         GetLocation.getCurrentPosition({
@@ -49,24 +47,24 @@ const Home = () => {
                 setCity(data.location.name);
                 setState(data.location.region);
                 setCountry(data.location.country);
-                setLastUpdated(data.last_updated);
-                //setIcon(data.condition.icon);
-                //setConditionText(data.condition.text);
-                setFeelslike(data.feelslike_c);
-                setHumidity(data.humidity);
-                setRainMili(data.precip_mm);
-                setTemp(data.temp_c);
-                setVisionDist(data.vis_km);
-                setWindDirection(data.wind_dir);
-                setWindSpeed(data.wind_kph);
-
+                setLastUpdated(data.location.localtime);
+                setIcon(data.current.condition.icon);
+                setConditionText(data.current.condition.text);
+                setFeelslike(data.current.feelslike_c);
+                setHumidity(data.current.humidity);
+                setRainMili(data.current.precip_mm);
+                setTemp(data.current.temp_c);
+                setVisionDist(data.current.vis_km);
+                setWindDirection(data.current.wind_dir);
+                setWindSpeed(data.current.wind_kph);
+                
             }
-    
+            
             requestWeather();
         } catch (error) {
             console.log(error);
         }
-            
+
         return weather;
         
     };
@@ -78,7 +76,7 @@ const Home = () => {
     }, []);
 
     return(
-        <View style = {styles.container}>
+        <SafeAreaView style = {styles.container}>
 
             {loading && 
                 <View style = {styles.loadingArea}>
@@ -88,19 +86,60 @@ const Home = () => {
             }
             {loading == false &&
                 <>
-                    <Text style = {styles.text}>{city}</Text>
-                    <Text style = {styles.text}>{state}</Text>
-                    <Text style = {styles.text}>{country}</Text>
+                    <View style = {styles.locationContainer}>
+                        <Text style = {styles.locationCountry}>{country}</Text>
+                        <Text style = {styles.locationState}>{state}</Text>
+                        <Text style = {styles.locationCity}>{city}</Text>
+                    </View>
 
-                    <TouchableOpacity onPress={() => refresh()}>
-                        <Text style = {styles.text}>REFRESH</Text>
-                    </TouchableOpacity>
+                    <View style = {styles.infoTop}>
+                        <View style = {styles.tempContainer}>
+                            <Text style = {styles.tempNumb}>{Math.round(temp)}°</Text>
+                            <Text style = {styles.tempCity}>{conditionText}</Text>
+                        </View>
+                        <View style = {styles.conditionContainer}>
+                            <Image style = {styles.conditionIcon} source = {{uri: 'https:' + icon}}/>
+                        </View>
+                    </View>
+
+                    <View style = {styles.lastUpdatedContainer}>
+                        <Text style = {styles.lastUpdatedText}>Last Updated: {lastUpdated}</Text>
+                        <TouchableOpacity onPress={() => refresh()}>
+                            <EvilIcons  name = "refresh" size = {30} color = "black"/>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style = {styles.tilesContainer}>
+                        <View style = {styles.tile}>
+                            <Text style = {styles.tileText}>{Math.round(feelslike)}°</Text>
+                            <Text style = {styles.tileText}>Feels Like</Text>
+                        </View>
+                        <View style = {styles.tile}>
+                            <Text style = {styles.tileText}>{humidity}%</Text>
+                            <Text style = {styles.tileText}>Humidity</Text>
+                        </View>
+                        <View style = {styles.tile}>
+                            <Text style = {styles.tileText}>{rainMili}mm</Text>
+                            <Text style = {styles.tileText}>Rain Millimiters</Text>
+                        </View>
+                        <View style = {styles.tile}>
+                            <Text style = {styles.tileText}>{visionDist}M</Text>
+                            <Text style = {styles.tileText}>View Distance</Text>
+                        </View>
+                        <View style = {styles.tile}>
+                            <Text style = {styles.tileText}>{windSpeed} Km/h</Text>
+                            <Text style = {styles.tileText}>Wind Speed</Text>
+                        </View>
+                        <View style = {styles.tile}>
+                            <Text style = {styles.tileText}>{windDirection}</Text>
+                            <Text style = {styles.tileText}>Wind Direction</Text>
+                        </View>
+                    </View>
+                    
                 </>
             }
 
-
-            
-        </View>
+        </SafeAreaView>
     );
 };
 
