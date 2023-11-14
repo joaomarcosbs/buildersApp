@@ -1,5 +1,5 @@
 # buildersApp
- <h2>Desafio Técnico Platform Builders</h2>
+ 
 
 <h3>Weather App made in React Native </h3>
 
